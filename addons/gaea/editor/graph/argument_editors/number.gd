@@ -21,6 +21,8 @@ func _configure() -> void:
 
 	if type == GaeaValue.Type.INT:
 		spin_box.step = 1
+	elif hint.has("step"):
+		spin_box.step = hint.get("step")
 
 	h_slider.visible = hint.has("min") and hint.has("max")
 	h_slider.step = spin_box.step

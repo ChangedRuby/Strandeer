@@ -47,6 +47,12 @@ func _get_argument_type(arg_name: StringName) -> GaeaValue.Type:
 	return GaeaValue.Type.INT if arg_name == &"octaves" else GaeaValue.Type.FLOAT
 
 
+func _get_argument_hint(arg_name: StringName) -> Dictionary[String, Variant]:
+	if arg_name == &"frequency":
+		return {"min": 0.0001, "step": 0.0001}
+	return super(arg_name)
+
+
 func _get_argument_default_value(arg_name: StringName) -> Variant:
 	match arg_name:
 		&"frequency":
