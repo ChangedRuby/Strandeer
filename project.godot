@@ -24,6 +24,10 @@ window/stretch/aspect="expand"
 
 enabled=PackedStringArray("res://addons/gaea/editor/plugin.cfg", "res://addons/gaea/plugin.cfg", "res://addons/gaea/runtime/plugin.cfg")
 
+[gaea]
+
+nodes/custom_nodes_path="res://scripts/gaea_nodes"
+
 [physics]
 
 3d/physics_engine="Jolt Physics"

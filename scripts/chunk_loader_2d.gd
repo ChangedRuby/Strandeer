@@ -20,6 +20,9 @@ extends GaeaChunkLoader
 ## How many chunks can generate in parallel. Without a limit, every chunk is sent to the thread
 ## pool at once and nearest-first ordering can't apply. 0 uses CPU threads - 2.
 @export_range(0, 64) var max_parallel_chunks: int = 0
+## Only chunks overlapping (0, 0) to [member world_limit] (in cells) are generated; the rest of the
+## view stays empty. Zero on an axis means that axis is infinite.
+@export var world_limit: Vector2i = Vector2i.ZERO
 
 @export_group("Debug")
 ## Keeps every generated chunk's result in memory. Chunks out of view are still removed from the
@@ -140,7 +143,16 @@ func _get_needed_render_distance() -> int:
 
 func _get_chunks_in_loading_radius(chunk_position: Vector3i) -> Array[Vector3i]:
 	var chunks: Array[Vector3i] = []
-	for y in range(chunk_position.y - render_distance, chunk_position.y + render_distance + 1):
-		for x in range(chunk_position.x - render_distance, chunk_position.x + render_distance + 1):
+	var min_chunk := Vector2i(chunk_position.x - render_distance, chunk_position.y - render_distance)
+	var max_chunk := Vector2i(chunk_position.x + render_distance, chunk_position.y + render_distance)
+	# Clamp to the chunks overlapping the world, so nothing outside it is ever generated.
+	if world_limit.x > 0:
+		min_chunk.x = maxi(min_chunk.x, 0)
+		max_chunk.x = mini(max_chunk.x, ceili(float(world_limit.x) / chunk_size.x) - 1)
+	if world_limit.y > 0:
+		min_chunk.y = maxi(min_chunk.y, 0)
+		max_chunk.y = mini(max_chunk.y, ceili(float(world_limit.y) / chunk_size.y) - 1)
+	for y in range(min_chunk.y, max_chunk.y + 1):
+		for x in range(min_chunk.x, max_chunk.x + 1):
 			chunks.append(Vector3i(x, y, 0))
 	return chunks
